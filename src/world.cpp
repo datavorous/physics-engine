@@ -3,12 +3,13 @@
 #include "entity.h"
 #include "math.h"
 #include <vector>
-
+#include <algorithm>
+//#include "spring.h"
 void World::addEntity(const Entity& e) {
 	entities.push_back(e);
 }
-
 void World::update(float dt) {
+	//updateSprings();
 	for (auto& e : entities) {
 		e.applyForce((Vector2){gravity.x * e.mass, gravity.y * e.mass});
 		e.integrate(dt);
@@ -28,28 +29,32 @@ void World::update(float dt) {
 			}
 		}
 	}
-}
 
+	// Remove entities that are outside the window boundaries
+	auto it = std::remove_if(entities.begin(), entities.end(), 
+		[](const Entity& e) {
+			return e.position.x < -e.radius || 
+				   e.position.x > 600 + e.radius || 
+				   e.position.y < -e.radius || 
+				   e.position.y > 600 + e.radius;
+		}
+	);
+	entities.erase(it, entities.end());
+}
 void World::resolveCollision(Entity& A, Entity& B, Vector2& normal, float& penetration, float dt) {
 	resolveImpulse(A, B, normal);
 	positionalCorrection(A, B, normal, penetration);
 }
-
 void World::draw() {
 	for(auto& e : entities) {
-		/**if (e.bType==STATIC_BODY){
-			DrawCircleV(e.position, e.radius,(Color){82,37,70});
-		}
-		else{
-			DrawCircleV(e.position, e.radius,(Color){247, 55, 79});
-		}**/
-		DrawCircleV(e.position, e.radius,(Color){166, 77, 240, 120});
+		DrawCircleV(e.position, e.radius, e.c);
 		
 	}
+	/*for(auto& spring : springs) {
+		DrawLineV(spring.entityA->position, spring.entityB->position, (Color){255, 255, 0});
+	}*/
 }
-
 bool World::checkCollision(Entity& A, Entity& B, Vector2& outNormal, float& outPenetration) {
-
 	Vector2 dist = { 
 		B.position.x - A.position.x,  
 		B.position.y - A.position.y
@@ -73,11 +78,8 @@ bool World::checkCollision(Entity& A, Entity& B, Vector2& outNormal, float& outP
 	outPenetration = radiusSum - distance;
 	return true;
 }
-
 void World::positionalCorrection(Entity& A, Entity& B, 
 	Vector2& normal, float& penetration) {
-	const float percent = 0.4f;  // smol = less aggresive
-	const float slop = 0.01f;	// pene allocation
 	
 	if (penetration <= slop) return;
 	
@@ -101,7 +103,6 @@ void World::positionalCorrection(Entity& A, Entity& B,
 		B.position.y += correction.y * B.invMass();
 	}
 }
-
 void World::resolveImpulse(Entity& A, Entity& B, Vector2& normal) {
 	Vector2 rv = { 
 		B.velocity.x - A.velocity.x, 
@@ -132,3 +133,12 @@ void World::resolveImpulse(Entity& A, Entity& B, Vector2& normal) {
 	
 	// handleFriction(A, B, normal, j); someday??
 }
+/*
+void World::addSpring(Entity* a, Entity* b, float restLen, float stiffness, float damping){
+	springs.push_back(Spring(a , b, restLen, stiffness, damping));
+}
+void World::updateSprings() {
+	for (auto& spring : springs){
+		spring.update();
+	}
+}*/

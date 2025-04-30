@@ -4,25 +4,25 @@
 
 int main() {
     SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
-    InitWindow(800, 800, "fysix ngin");
+    InitWindow(600, 600, "fysix ngin");
 
     World world({0, 980.0f});
 
     /**for (int x = 0; x<20; x++){
-    	world.addEntity(Entity(
-    		2.0f, {400+float(x*10), 400}, STATIC_BODY));
+        world.addEntity(Entity(
+            2.0f, {400+float(x*10), 400}, STATIC_BODY));
     }**/
   
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
             Vector2 mousePos = GetMousePosition();
-            world.addEntity(Entity(1.0f, mousePos, RIGID_BODY));
+            world.addEntity(Entity(float(GetRandomValue(1,20)), mousePos, RIGID_BODY, GetRandomValue(5,20), {GetRandomValue(125,250),GetRandomValue(125,255),GetRandomValue(125,255),255}));
         }
-        else if(IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
-        	Vector2 mousePos = GetMousePosition();
-            world.addEntity(Entity(1.0f, mousePos, STATIC_BODY));
+        else if(IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
+            Vector2 mousePos = GetMousePosition();
+            world.addEntity(Entity(50.0f, mousePos, STATIC_BODY,6, RAYWHITE ));
         }
         world.update(dt);
 
