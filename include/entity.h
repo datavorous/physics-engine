@@ -10,7 +10,7 @@ class Entity {
 public:
     float mass;
     float restitution = 0.7;
-    int radius = 20;
+    int radius = 5;
     short shapeId;
     Vector2 position;
     Vector2 velocity;
