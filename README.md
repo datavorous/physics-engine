@@ -1,3 +1,7 @@
+## physics engine 
+
+<img src="demo-pe.gif">
+
 a physics engine which i wanted to make long back  
 
 todo:
